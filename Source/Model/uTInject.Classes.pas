@@ -37,7 +37,7 @@ unit uTInject.Classes;
 
 interface
 
-{$I TInjectDiretiva.inc}
+{$I ..\..\Packages\Compilados\VD26\TInjectDiretiva.inc}
 
 uses Generics.Collections, Rest.Json, uTInject.FrmQRCode, Vcl.Graphics, System.IOUtils,
   System.Classes, uTInject.Constant, IdHTTP, Vcl.ExtCtrls,

@@ -75,6 +75,7 @@ requires
   VclSmp;
 
 contains
+  Vcl.IdAntiFreeze,
   uTInject.FrmConfigNetWork in '..\Source\View\uTInject.FrmConfigNetWork.pas' {FrmConfigNetWork},
   uTInject.Console in '..\Source\View\uTInject.Console.pas' {FrmConsole},
   uTInject.FrmQRCode in '..\Source\View\uTInject.FrmQRCode.pas' {FrmQRCode},
@@ -91,7 +92,8 @@ contains
   uTInject.ExePath in '..\Source\Model\uTInject.ExePath.pas',
   uTInject.JS in '..\Source\Model\uTInject.JS.pas',
   uCSV.Import in '..\Source\Model\uCSV.Import.pas';
-  //u_principal in '..\Demo\u_principal.pas' {frmPrincipal};
+
+//u_principal in '..\Demo\u_principal.pas' {frmPrincipal};
 
 end.
 

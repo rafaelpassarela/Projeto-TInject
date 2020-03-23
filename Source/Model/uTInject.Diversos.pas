@@ -61,7 +61,9 @@ var
 begin
   AObj   := TJSONObject.ParseJSONValue(JsonString) as TJSONObject;
   try
+    {$WARN SYMBOL_DEPRECATED OFF}
     result := TJSON.Format(AObj);
+    {$WARN SYMBOL_DEPRECATED ON}
   finally
     AObj.Free;
   end;

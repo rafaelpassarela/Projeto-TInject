@@ -1,6 +1,8 @@
 ﻿unit uTInject.FrmConfigNetWork;
 
-{$I cef.inc}
+//{$I cef.inc}
+
+{$I ..\..\..\CEF4Delphi\source\cef.inc}
 
 interface
 

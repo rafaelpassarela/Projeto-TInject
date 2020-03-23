@@ -38,7 +38,8 @@ uses
   Vcl.ExtCtrls, IdHTTP, uTInject.Diversos;
 
 {$M+}{$TYPEINFO ON}
-{$I cef.inc}
+{$I ..\..\..\CEF4Delphi\source\cef.inc}
+//{$I cef.inc}
 
 type
     TInjectJSDefine  = class

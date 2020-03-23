@@ -436,7 +436,6 @@ begin
        AddContactList(AContact.id + ' ' +AContact.name);
     End;
   end;
-  AContact := nil;
 end;
 
 procedure TfrmPrincipal.TInject1GetBatteryLevel(Sender: TObject);

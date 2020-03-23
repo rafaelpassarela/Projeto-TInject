@@ -1288,8 +1288,8 @@ end;
 
 
 procedure TFrmConsole.CheckIsConnected;
-var
-  Ljs: string;
+//var
+//  Ljs: string;
 begin
   ExecuteJS(FrmConsole_JS_VAR_IsConnected, False);
 end;
