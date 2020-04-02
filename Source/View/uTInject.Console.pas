@@ -114,7 +114,7 @@ type
     Procedure ExecuteCommandConsole(Const PResponse: TResponseConsoleMessage);
   private
     { Private declarations }
-    LPaginaId, Fzoom               : integer;
+    LPaginaId, Fzoom        : integer;
     FCanClose               : Boolean;
     FDirTemp                : String;
     FConectado              : Boolean;
@@ -526,9 +526,19 @@ end;
 
 procedure TFrmConsole.StopQrCode(PQrCodeType: TFormQrCodeType);
 begin
-  FrmQRCode.HIDE;
-  if PQrCodeType = Ft_Http then
-     DisConnect;
+  if Assigned(FrmQRCode) then
+  begin
+    try
+      if (FFormType = Ft_Desktop) and (not (csDestroying in ComponentState)) then
+        FrmQRCode.HIDE;
+
+      if PQrCodeType = Ft_Http then
+         DisConnect;
+    except
+      on E:Exception do
+        OutputDebugString(PChar('Erro finalizando QRCode -> ' + E.Message));
+    end;
+  end;
 end;
 
 procedure TFrmConsole.StopWebBrowser;
@@ -1236,8 +1246,10 @@ procedure TFrmConsole.FormDestroy(Sender: TObject);
 begin
   if Assigned(FrmQRCode) then
   Begin
-    FrmQRCode.PodeFechar := True;
-//    FrmQRCode.close;
+    if FFormType = Ft_Desktop then
+      FreeAndNil(FrmQRCode)
+    else
+      FrmQRCode.PodeFechar := True;
   End;
 
   if Assigned(FTimerMonitoring) then

@@ -67,7 +67,7 @@ begin
   SetResourceString(@MSG_ConfigCEF_ExceptNotFoundPATH     , 'Não é possível realizar essa operação após a inicialização do componente');
   SetResourceString(@MSG_ConfigCEF_ExceptConnection       , 'Erro ao conectar com componente');
   SetResourceString(@MSG_ConfigCEF_ExceptBrowse           , 'Erro ao criar browser no CEF');
-  SetResourceString(@MSG_ConfigCEF_ExceptConnetServ       , 'Você não está conectado ao Servidor de serviço');
+  SetResourceString(@MSG_ConfigCEF_ExceptConnetServ       , 'Você não está conectado ao Servidor do Serviço');
   SetResourceString(@MSG_ConfigCEF_ExceptConsoleNaoPronto , 'Console ainda não obteve os comandos de INJECT JS');
   SetResourceString(@MSG_ConfigCEF_ExceptVersaoErrada     , 'Sua versão do CEF4 não é compatível, por favor, atualize suas biblioteca em https://github.com/salvadordf/CEF4Delphi' + slinebreak + 'Versão requerida: %s' + slinebreak + 'Versão identificada: %s');
   SetResourceString(@MSG_ExceptSetBatteryLow              , 'O valor deve estar entre 5 e 90');
@@ -77,12 +77,12 @@ begin
   SetResourceString(@MSG_WarningDuplicityDetected         , 'Enviando o mesmo comando em um intervalo pequeno');
   SetResourceString(@MSG_ExceptJS_ABRUnknown              , 'Retorno JS.ABR não conhecido');
   SetResourceString(@MSG_ExceptNotAssignedOnGetQrCode     , 'OnGetQrCode não foi definido');
-  SetResourceString(@Text_FrmClose_Caption                , 'Aguarde.. Finalizando o TInject..');
-  SetResourceString(@Text_FrmClose_Label                  , 'Finalizando todas as threads com segurança');
-  SetResourceString(@Text_FrmClose_WarningClose           , 'Deseja Finalizar a aplicação?');
+  SetResourceString(@Text_FrmClose_Caption                , 'Aguarde.. Finalizando comunicação..');
+  SetResourceString(@Text_FrmClose_Label                  , 'Finalizando todas as conexões com segurança...');
+  SetResourceString(@Text_FrmClose_WarningClose           , 'Deseja finalizar a aplicação?');
   SetResourceString(@Text_FrmQRCode_CaptionStart          , 'Carregando QR Code...');
-  SetResourceString(@Text_FrmQRCode_CaptionSucess         , 'Aponte seu celular agora!');
-  SetResourceString(@Text_FrmQRCode_OnCLose               , 'Cancelar entrada ao Servidor de serviço?');
+  SetResourceString(@Text_FrmQRCode_CaptionSucess         , 'Aponte seu celular para entrar...');
+  SetResourceString(@Text_FrmQRCode_OnCLose               , 'Deseja cancelar a entrada no Servidor do WhatsApp?');
   SetResourceString(@MSG_ExceptPhoneNumberError           , 'Número inválido');
   SetResourceString(@MSG_ExceptAlterDesigner              , 'Não é possível modificar em Modo Designer');
   SetResourceString(@MSG_ExceptAlterInicialized           , 'Método não pode ser modificado após TInject Inicializado');
@@ -104,16 +104,16 @@ begin
   SetResourceString(@MSG_WarningQrCodeStart1              , 'A sessão anterior ainda está sendo finalizada, tente novamente mais tarde');
   SetResourceString(@Text_Status_Serv_Initialized         , 'TInject conectado com sucesso ao Servidor de serviço');
   SetResourceString(@Text_Status_Serv_Initializing        , 'Inicializando TInject ao Servidor de serviço');
-  SetResourceString(@Text_Status_Serv_Disconnected        , 'Não Conectado ao Servidor de serviço e TInject');
-  SetResourceString(@Text_Status_Serv_Disconnecting       , 'Desconectado do Servidor de serviço e TInject ');
+  SetResourceString(@Text_Status_Serv_Disconnected        , 'Não Conectado ao Servidor do WhatsApp e Túnel de Conexão.');
+  SetResourceString(@Text_Status_Serv_Disconnecting       , 'Desconectado do Servidor do WhatsApp...');
   SetResourceString(@Text_Status_Serv_Connected           , 'Servidor de serviço Conectado');
   SetResourceString(@Text_Status_Serv_ConnectedDown       , 'Sessão finalizada via Celular');
   SetResourceString(@Text_Status_Serv_Connecting          , 'Aguarde, Conectando ao Servidor de serviço');
   SetResourceString(@Text_Status_Serv_ConnectingNoPhone   , 'Erro ao conectar, Telefone desligado');
   SetResourceString(@Text_Status_Serv_ConnectingReaderQR  , 'Aguardando leitura QR Code');
   SetResourceString(@Text_Status_Serv_TimeOut             , 'Erro ao conectar (TimeOut)');
-  SetResourceString(@Text_Status_Serv_Destroying          , 'Destruindo e fechando Tinject');
-  SetResourceString(@Text_Status_Serv_Destroy             , 'TInject finalizado');
+  SetResourceString(@Text_Status_Serv_Destroying          , 'Fechando e destruindo túnel de conexão.');
+  SetResourceString(@Text_Status_Serv_Destroy             , 'Túnel de conexão finalizado.');
   SetResourceString(@MSG_WarningNothingtoSend             , 'Não existe nenhum conteúdo a ser enviado na mensagem');
 
   SetResourceString(@MSG_Except_Data_TypeObj              , 'Tipo de objeto não é compatível');
@@ -121,7 +121,7 @@ begin
   SetResourceString(@MSG_Except_DATA_ConnectionNull       , 'Conexão Nao vinculada');
   SetResourceString(@MSG_Except_AtribuicaoInvalida        , 'Atribuição Inválida(já esta em uso por outro objeto)');
   SetResourceString(@MSG_WarningDeveloper                 , 'Aviso ao Desenvolvedor VIA IDE');
-  SetResourceString(@Text_DefaultPathDown                 , 'TInjectAnexos');
+  SetResourceString(@Text_DefaultPathDown                 , 'DownloadedFiles');
   SetResourceString(@Text_DefaultError                    , 'Erro ao criar diretório em ');
   SetResourceString(@MSG_Except_SaveAttached              , 'Erro ao salvar arquivo em anexo à mensagem');
   SetResourceString(@MSG_Except_CefNull                   , 'Componente GlobalCEFApp não foi inicializado em seu .DPR (Verifique o .DPR da aplicação DEMO para melhor entendimento)');

@@ -7,6 +7,7 @@ object FrmQRCode: TFrmQRCode
   ClientHeight = 304
   ClientWidth = 311
   Color = clBtnFace
+  DoubleBuffered = True
   Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText
   Font.Height = -11
@@ -46,6 +47,7 @@ object FrmQRCode: TFrmQRCode
     Height = 304
     Margins.Left = 5
     Margins.Top = 5
+    IncrementalDisplay = True
     Picture.Data = {
       0954474946496D61676547494638396118011801F70000000000010101020202
       0404040707070C0C0C0D0D0D0F0F0F1010101414141515151616161A1A1A1B1B

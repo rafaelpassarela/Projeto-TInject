@@ -143,16 +143,28 @@ begin
 end;
 
 Procedure TInjectConfig.SetReceiveAttachmentPath(const Value: String);
+var
+  lTmp : string;
+  lDir : string;
+  lValue : string;
 begin
-  if FReceiveAttachmentPath  = value then
+  if FReceiveAttachmentPath = Value then
      Exit;
 
-  if not ForceDirectories(IncludeTrailingPathDelimiter(Value) + Text_DefaultPathDown) Then
-     raise Exception.Create(Text_DefaultError + (IncludeTrailingPathDelimiter(Value) + Text_DefaultPathDown));
+  lTmp := GlobalCEFApp.PathDownloadAttached;
 
-  FReceiveAttachmentPath := IncludeTrailingPathDelimiter(IncludeTrailingPathDelimiter(Value) + Text_DefaultPathDown);
-  GlobalCEFApp.UpdateIniFile('Path Defines', 'Auto Receiver attached Path', Value);
+  lDir := IncludeTrailingPathDelimiter(ExtractFilePath(Application.ExeName));
+  lValue := StringReplace(Value, lDir, '', [rfIgnoreCase]);
 
+  if (lTmp = EmptyStr) or (lValue <> EmptyStr) then
+  begin
+    if not ForceDirectories(IncludeTrailingPathDelimiter(lValue) + Text_DefaultPathDown) Then
+       raise Exception.Create(Text_DefaultError + (IncludeTrailingPathDelimiter(lValue) + Text_DefaultPathDown));
+
+    FReceiveAttachmentPath := IncludeTrailingPathDelimiter(IncludeTrailingPathDelimiter(lValue) + Text_DefaultPathDown);
+    GlobalCEFApp.UpdateIniFile('Path Defines', 'Auto Receiver attached Path', lValue);
+  end else
+    FReceiveAttachmentPath := lTmp;
 end;
 
 procedure TInjectConfig.SetSecondsMonitor(const Value: Integer);

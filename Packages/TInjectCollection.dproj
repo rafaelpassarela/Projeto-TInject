@@ -73,7 +73,7 @@
         <VerInfo_IncludeVerInfo>true</VerInfo_IncludeVerInfo>
         <VerInfo_Keys>CompanyName=;FileDescription=$(MSBuildProjectName);FileVersion=1.0.0.0;InternalName=;LegalCopyright=;LegalTrademarks=;OriginalFilename=;ProductName=$(MSBuildProjectName);ProductVersion=1.0.0.0;Comments=;ProgramID=com.embarcadero.$(MSBuildProjectName)</VerInfo_Keys>
         <VerInfo_Locale>1033</VerInfo_Locale>
-        <DCC_UsePackage>DbxCommonDriver;dbrtl;IndySystem;IndyProtocols;IndyCore;vclFireDAC;vcldb;VclSmp;dsnap;dbexpress;vclwinx;adortl;CEF4Delphi;$(DCC_UsePackage)</DCC_UsePackage>
+        <DCC_UsePackage>DbxCommonDriver;dbrtl;IndySystem;IndyProtocols;IndyCore;vclFireDAC;vcldb;VclSmp;dsnap;dbexpress;vclwinx;adortl;CEF4Delphi;RpFlexDBConnection;$(DCC_UsePackage)</DCC_UsePackage>
         <DCC_DcpOutput>$(BDSCOMMONDIR)\Dcp\</DCC_DcpOutput>
         <DCC_BplOutput>$(BDSCOMMONDIR)\Bpl\</DCC_BplOutput>
         <DCC_DcuOutput>$(BDSCOMMONDIR)\Dcu\</DCC_DcuOutput>
@@ -122,6 +122,7 @@ $(PostBuildEvent)]]></PostBuildEvent>
         <DCCReference Include="RESTComponents.dcp"/>
         <DCCReference Include="CEF4Delphi.dcp"/>
         <DCCReference Include="VclSmp.dcp"/>
+        <DCCReference Include="RpFlexDBConnection.dcp"/>
         <DCCReference Include="..\Source\View\uTInject.FrmConfigNetWork.pas">
             <Form>FrmConfigNetWork</Form>
         </DCCReference>
@@ -180,12 +181,6 @@ $(PostBuildEvent)]]></PostBuildEvent>
                         <Overwrite>true</Overwrite>
                     </Platform>
                 </DeployFile>
-                <DeployFile LocalName="C:\Users\Public\Documents\Embarcadero\Studio\19.0\Bpl\TInjectCollection.bpl" Configuration="Debug" Class="ProjectOutput">
-                    <Platform Name="Win32">
-                        <RemoteName>TInjectCollection.bpl</RemoteName>
-                        <Overwrite>true</Overwrite>
-                    </Platform>
-                </DeployFile>
                 <DeployFile LocalName="$(BDS)\Redist\osx64\libcgsqlite3.dylib" Class="DependencyModule">
                     <Platform Name="OSX64">
                         <Overwrite>true</Overwrite>
@@ -208,6 +203,12 @@ $(PostBuildEvent)]]></PostBuildEvent>
                 </DeployFile>
                 <DeployFile LocalName="$(BDS)\Redist\osx32\libcgsqlite3.dylib" Class="DependencyModule">
                     <Platform Name="OSX32">
+                        <Overwrite>true</Overwrite>
+                    </Platform>
+                </DeployFile>
+                <DeployFile LocalName="C:\Users\Public\Documents\Embarcadero\Studio\20.0\Bpl\TInjectCollection.bpl" Configuration="Debug" Class="ProjectOutput">
+                    <Platform Name="Win32">
+                        <RemoteName>TInjectCollection.bpl</RemoteName>
                         <Overwrite>true</Overwrite>
                     </Platform>
                 </DeployFile>

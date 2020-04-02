@@ -69,10 +69,12 @@ type
     FStartTimeOut        : Cardinal;
     FErrorInt            : Boolean;
     FPathJsUpdate        : TdateTime;
-    FLogConsole          : String;
+    FPathLogConsole      : String;
     FHandleFrm           : HWND;
     FInDesigner          : Boolean;
     FLogConsoleActive    : Boolean;
+    FAutoCreatePaths: Boolean;
+    FPathDownloadAttached: string;
     procedure SetDefault;
     procedure SetPathCache   (const Value: String);
     procedure SetPathFrameworkDirPath(const Value: String);
@@ -83,8 +85,9 @@ type
     function  TestaOk                (POldValue, PNewValue: String): Boolean;
     procedure SetChromium            (const Value: TChromium);
     Function  VersaoCEF4Aceita: Boolean;
-    procedure SetLogConsole(const Value: String);
+    procedure SetPathLogConsole(const Value: String);
     procedure SetLogConsoleActive(const Value: Boolean);
+    procedure SetPathDownloadAttached(const Value: string);
   public
     SetEnableGPU         : Boolean;
     SetDisableFeatures   : String;
@@ -98,27 +101,27 @@ type
     constructor Create;
     destructor  Destroy; override;
 
-    Function   PathJsOverdue        : Boolean;
-    property   PathJsUpdate         : TdateTime    Read FPathJsUpdate;
-    property   IniFIle              : TIniFile     Read FIniFIle              Write FIniFIle;
-    property   PathFrameworkDirPath : String       Read FPathFrameworkDirPath Write SetPathFrameworkDirPath;
-    property   PathResourcesDirPath : String       Read FPathResourcesDirPath Write SetPathResourcesDirPath;
-    property   PathLocalesDirPath   : String       Read FPathLocalesDirPath   Write SetPathLocalesDirPath;
-    property   PathCache            : String       Read FPathCache            Write SetPathCache;
-    property   PathUserDataPath     : String       Read FPathUserDataPath     Write SetPathUserDataPath;
-    property   PathLogFile          : String       Read FPathLogFile          Write SetPathLogFile;
-    property   PathJs               : String       Read FPathJS;
-    property   LogConsole           : String       Read FLogConsole           Write SetLogConsole;
-    property   LogConsoleActive     : Boolean      Read FLogConsoleActive     Write SetLogConsoleActive;
-    Property   StartTimeOut         : Cardinal     Read FStartTimeOut         Write FStartTimeOut;
-    Property   Chromium             : TChromium    Read FChromium             Write SetChromium;
-    Property   ChromiumForm         : TForm        Read FChromiumForm;
-    Property   ErrorInt             : Boolean      Read FErrorInt;
-
+    function PathJsOverdue: Boolean;
+    property PathJsUpdate: TdateTime read FPathJsUpdate;
+    property IniFIle: TIniFile read FIniFIle write FIniFIle;
+    property PathFrameworkDirPath: string read FPathFrameworkDirPath write SetPathFrameworkDirPath;
+    property PathResourcesDirPath: string read FPathResourcesDirPath write SetPathResourcesDirPath;
+    property PathLocalesDirPath: string read FPathLocalesDirPath write SetPathLocalesDirPath;
+    property PathCache: string read FPathCache write SetPathCache;
+    property PathUserDataPath: string read FPathUserDataPath write SetPathUserDataPath;
+    property PathLogFile: string read FPathLogFile write SetPathLogFile;
+    property PathJs: string read FPathJS;
+    property PathLogConsole: string read FPathLogConsole write SetPathLogConsole;
+    property PathDownloadAttached : string read FPathDownloadAttached write SetPathDownloadAttached;
+    property LogConsoleActive: Boolean read FLogConsoleActive write SetLogConsoleActive;
+    property StartTimeOut: Cardinal read FStartTimeOut write FStartTimeOut;
+    property Chromium: TChromium read FChromium write SetChromium;
+    property ChromiumForm: TForm read FChromiumForm;
+    property ErrorInt: Boolean read FErrorInt;
+    property AutoCreatePaths: Boolean read FAutoCreatePaths write FAutoCreatePaths;
   end;
 
-
-   procedure DestroyGlobalCEFApp;
+  procedure DestroyGlobalCEFApp;
 
 var
   GlobalCEFApp: TCEFConfig = nil;
@@ -148,18 +151,21 @@ begin
   if FInDesigner then
      Exit;
 
-  if (LowerCase(FIniFIle.ReadString(PSection, PKey, '')) <> LowerCase(PValue)) or
-     (FIniFIle.ValueExists(PSection, PKey) = false) Then
-   Begin
+  if (LowerCase(FIniFIle.ReadString(PSection, PKey, '')) <> LowerCase(PValue))
+  or (FIniFIle.ValueExists(PSection, PKey) = false) then
+  begin
     FIniFIle.WriteString(PSection, PKey, PValue);
     Falterdo := true;
-  End;
+  end;
 end;
 
 constructor TCEFConfig.Create;
 begin
-  FInDesigner          := True;
+  FInDesigner := True;
+
   inherited;
+
+  FAutoCreatePaths := False;
 end;
 
 procedure TCEFConfig.SetChromium(const Value: TChromium);
@@ -204,7 +210,7 @@ end;
 Procedure TCEFConfig.SetDefault;
 begin
   if not FInDesigner then
-  Begin
+  begin
     FIniFIle.WriteString ('Informacao', 'Aplicativo vinculado',    Application.ExeName);
     FIniFIle.WriteBool   ('Informacao', 'Valor True',    True);
     FIniFIle.WriteBool   ('Informacao', 'Valor False',   False);
@@ -213,16 +219,19 @@ begin
     SetEnableGPU            := FIniFIle.ReadBool  ('Path Defines', 'GPU',                 True);
     SetLogSeverity          := FIniFIle.ReadBool  ('Path Defines', 'Log Severity',        False);
     LogConsoleActive        := FIniFIle.ReadBool  ('Path Defines', 'Log Console Active',  False);
-    PathFrameworkDirPath    := FIniFIle.ReadString('Path Defines', 'FrameWork', '');
-    PathResourcesDirPath    := FIniFIle.ReadString('Path Defines', 'Binary',    '');
-    PathLocalesDirPath      := FIniFIle.ReadString('Path Defines', 'Locales',   '');
-    Pathcache               := FIniFIle.ReadString('Path Defines', 'Cache',     '');
-    PathUserDataPath        := FIniFIle.ReadString('Path Defines', 'Data User', '');
-    PathLogFile             := FIniFIle.ReadString('Path Defines', 'Log File',  '');
-    LogConsole              := FIniFIle.ReadString('Path Defines', 'Log Console',  '');
-    if LogConsole = '' then
-       LogConsole            := IncludeTrailingPathDelimiter(ExtractFilePath(Application.ExeName))+'LogTinject\';
-  End;
+    // para caso já tenha sido configurado, grava a nova configuracao no arquivo Ini
+    PathFrameworkDirPath    := FIniFIle.ReadString('Path Defines', 'FrameWork', FPathFrameworkDirPath);
+    PathResourcesDirPath    := FIniFIle.ReadString('Path Defines', 'Binary',    FPathResourcesDirPath);
+    PathLocalesDirPath      := FIniFIle.ReadString('Path Defines', 'Locales',   FPathLocalesDirPath);
+    Pathcache               := FIniFIle.ReadString('Path Defines', 'Cache',     FPathcache);
+    PathUserDataPath        := FIniFIle.ReadString('Path Defines', 'Data User', FPathUserDataPath);
+    PathLogFile             := FIniFIle.ReadString('Path Defines', 'Log File',  FPathLogFile);
+    PathLogConsole          := FIniFIle.ReadString('Path Defines', 'Log Console', FPathLogConsole);
+    PathDownloadAttached    := FIniFIle.ReadString('Path Defines', 'Auto Receiver attached Path', FPathDownloadAttached);
+
+    if PathLogConsole = '' then
+      PathLogConsole := IncludeTrailingPathDelimiter(ExtractFilePath(Application.ExeName))+'Logs\';
+  end;
   Self.FrameworkDirPath   := '';
   Self.ResourcesDirPath   := '';
   Self.LocalesDirPath     := 'locales';
@@ -230,47 +239,49 @@ begin
   Self.UserDataPath       := 'User Data';
 end;
 
-
 procedure TCEFConfig.SetError;
 begin
   FErrorInt := True;
 end;
 
-procedure TCEFConfig.SetLogConsole(const Value: String);
+procedure TCEFConfig.SetPathLogConsole(const Value: String);
 begin
   if Value <> '' then
   Begin
-    FLogConsole := IncludeTrailingPathDelimiter(ExtractFilePath(Value));
-    ForceDirectories(FLogConsole);
+    FPathLogConsole := IncludeTrailingPathDelimiter(ExtractFilePath(Value));
+    ForceDirectories(FPathLogConsole);
   end else
-  Begin
-    FLogConsole := '';
-  End;
+    FPathLogConsole := '';
 end;
 
 procedure TCEFConfig.SetLogConsoleActive(const Value: Boolean);
 begin
   FLogConsoleActive := Value;
-  if (LogConsoleActive) and (LogConsole <> '') then
-     ForceDirectories(LogConsole);
+  if (LogConsoleActive) and (PathLogConsole <> '') then
+    ForceDirectories(PathLogConsole);
 end;
 
 function TCEFConfig.TestaOk(POldValue, PNewValue: String):Boolean;
 var
-  LDir : String;
+  lDir : String;
 begin
   if AnsiLowerCase(POldValue) = AnsiLowerCase(PNewValue) Then
-  Begin
-    Result := False;
-    Exit;
-  End;
+    Result := False
+  else begin
+    lDir := ExtractFilePath(PNewValue);
 
-  LDir := ExtractFilePath(PNewValue);
-  if Self.status = asInitialized then
-     raise Exception.Create(MSG_ConfigCEF_ExceptNotFoundPATH);
-  if not DirectoryExists(LDir) then
-    raise Exception.Create(Format(MSG_ExceptPath, [LDir]));
-  Result := true;
+    if Self.status = asInitialized then
+      raise Exception.Create(MSG_ConfigCEF_ExceptNotFoundPATH);
+
+    if not DirectoryExists(lDir) then
+    begin
+      if FAutoCreatePaths then
+        ForceDirectories(lDir)
+      else
+        raise Exception.Create(Format('O diretório não foi localizado: [%s]', [lDir]));
+    end;
+    Result := True;
+  end;
 end;
 
 
@@ -294,23 +305,20 @@ end;
 
 procedure TCEFConfig.SetPathFrameworkDirPath(const Value: String);
 begin
-  if not TestaOk(FPathFrameworkDirPath, Value) Then
-     Exit;
-  FPathFrameworkDirPath := Value;
+  if TestaOk(FPathFrameworkDirPath, Value) Then
+    FPathFrameworkDirPath := Value;
 end;
 
 procedure TCEFConfig.SetPathResourcesDirPath(const Value: String);
 begin
-  if not TestaOk(FPathResourcesDirPath, Value) Then
-     Exit;
-  FPathResourcesDirPath := Value;
+  if TestaOk(FPathResourcesDirPath, Value) Then
+    FPathResourcesDirPath := Value;
 end;
 
 procedure TCEFConfig.SetPathLocalesDirPath(const Value: String);
 begin
-  if not TestaOk(FPathLocalesDirPath, Value) Then
-     Exit;
-  FPathLocalesDirPath   := Value;
+  if TestaOk(FPathLocalesDirPath, Value) Then
+    FPathLocalesDirPath   := Value;
 end;
 
 procedure TCEFConfig.SetPathCache(const Value: String);
@@ -319,37 +327,48 @@ begin
      Exit;
 
   ForceDirectories(PWideChar(ExtractFilePath(Value)));
-  if not TestaOk(FPathCache, Value) Then
-     Exit;
-  FPathCache            := Value;
+
+  if TestaOk(FPathCache, Value) Then
+    FPathCache := Value;
+end;
+
+procedure TCEFConfig.SetPathDownloadAttached(const Value: string);
+begin
+  if TestaOk(FPathDownloadAttached, Value) then
+    FPathDownloadAttached := Value;
 end;
 
 procedure TCEFConfig.SetPathUserDataPath(const Value: String);
 begin
-  if not TestaOk(FPathUserDataPath, Value) Then
-     Exit;
-  FPathUserDataPath   := Value;
+  if TestaOk(FPathUserDataPath, Value) Then
+    FPathUserDataPath   := Value;
 end;
 
 function TCEFConfig.StartMainProcess: boolean;
 var
   Linicio: Cardinal;
   LVReque, LVerIdent: String;
-  FDirApp, Lx: String;
+  lDirApp, Lx: String;
+
+  function GetRelativePath(const AFullPath : string) : string;
+  begin
+    Result := StringReplace(AFullPath, lDirApp, '.\', [rfIgnoreCase]);
+  end;
+
 begin
 //ta lento pq estou conectado em um tunel estou daki ao meu pc.;. do meu pc a
   Result  := (Self.status = asInitialized);
   if (Result) Then
-  Begin
+  begin
     //Ja iniciada!! cai fora!!
     Exit;
   end;
 
   FInDesigner          := False;
-  FDirApp              := IncludeTrailingPathDelimiter(ExtractFilePath(Application.ExeName));
-  FIniFIle             := TIniFile.create(FDirApp + NomeArquivoIni);
+  lDirApp              := IncludeTrailingPathDelimiter(ExtractFilePath(Application.ExeName));
+  FIniFIle             := TIniFile.create(lDirApp + StringReplace(ExtractFileName(Application.ExeName), '.exe', '.ini', [rfIgnoreCase]));
   Lx                   := FIniFIle.ReadString('Tinject Comp', 'Ultima interação', '01/01/1500 05:00:00');
-  FPathJS              := FDirApp + NomeArquivoInject;
+  FPathJS              := lDirApp + NomeArquivoInject;
   FErrorInt            := False;
   FStartTimeOut        := 5000; //(+- 5 Segundos)
   FPathJsUpdate        := StrToDateTimeDef(Lx, StrTodateTime('01/01/1500 00:00'));
@@ -371,29 +390,40 @@ begin
   Self.EnableGPU              := SetEnableGPU;
   Self.DisableFeatures        := SetDisableFeatures;
 
-  If PathFrameworkDirPath <> '' then
-     Self.FrameworkDirPath    := PathFrameworkDirPath;
-  If PathResourcesDirPath <> '' then
-     Self.ResourcesDirPath    := PathResourcesDirPath;
-  If PathLocalesDirPath   <> '' Then
-     Self.LocalesDirPath      := PathLocalesDirPath;
-  If Pathcache            <> '' then
-     Self.cache               := Pathcache;
-  If PathUserDataPath     <> '' then
-     Self.UserDataPath        := PathUserDataPath;
-  If PathLogFile          <> '' then
-     Self.LogFile             := PathLogFile;
-  If SetLogSeverity then
-     Self.LogSeverity := LOGSEVERITY_INFO;
-  DestroyApplicationObject   := true;
+  if PathFrameworkDirPath <> '' then
+    Self.FrameworkDirPath := PathFrameworkDirPath;
 
-  UpdateIniFile('Path Defines', 'FrameWork',     Self.FrameworkDirPath);
-  UpdateIniFile('Path Defines', 'Binary',        Self.ResourcesDirPath);
-  UpdateIniFile('Path Defines', 'Locales',       Self.LocalesDirPath);
-  UpdateIniFile('Path Defines', 'Cache',         Self.cache);
-  UpdateIniFile('Path Defines', 'Data User',     Self.UserDataPath);
-  UpdateIniFile('Path Defines', 'Log File',      Self.LogFile);
-  UpdateIniFile('Path Defines', 'Log Console',   LogConsole);
+  if PathResourcesDirPath <> '' then
+    Self.ResourcesDirPath := PathResourcesDirPath;
+
+  if PathLocalesDirPath <> '' Then
+    Self.LocalesDirPath := PathLocalesDirPath;
+
+  if Pathcache <> '' then
+    Self.cache := Pathcache;
+
+  if PathUserDataPath <> '' then
+    Self.UserDataPath := PathUserDataPath;
+
+  if PathLogFile <> '' then
+    Self.LogFile := PathLogFile;
+
+  if PathDownloadAttached <> '' then
+    Self.PathDownloadAttached := PathDownloadAttached;
+
+  if SetLogSeverity then
+    Self.LogSeverity := LOGSEVERITY_INFO;
+
+  DestroyApplicationObject := True;
+
+  UpdateIniFile('Path Defines', 'FrameWork',     GetRelativePath(Self.FrameworkDirPath));
+  UpdateIniFile('Path Defines', 'Binary',        GetRelativePath(Self.ResourcesDirPath));
+  UpdateIniFile('Path Defines', 'Locales',       GetRelativePath(Self.LocalesDirPath));
+  UpdateIniFile('Path Defines', 'Cache',         GetRelativePath(Self.Cache));
+  UpdateIniFile('Path Defines', 'Data User',     GetRelativePath(Self.UserDataPath));
+  UpdateIniFile('Path Defines', 'Log File',      GetRelativePath(Self.LogFile));
+  UpdateIniFile('Path Defines', 'Log Console',   GetRelativePath(Self.PathLogConsole));
+  UpdateIniFile('Path Defines', 'Auto Receiver attached Path', GetRelativePath(Self.PathDownloadAttached));
 
   FIniFIle.WriteBool('Path Defines', 'GPU',                  SetEnableGPU);
   FIniFIle.WriteBool('Path Defines', 'Log Severity',         SetLogSeverity);
@@ -406,7 +436,6 @@ begin
   UpdateIniFile('Tinject Comp', 'Dlls'          ,   LIBCEF_DLL + ' / ' + CHROMEELF_DLL);
   if Falterdo then
     UpdateDateIniFile;
-
 
   //Chegou aqui, é porque os PATH são validos e pode continuar
   inherited;  //Dispara a THREAD la do objeto PAI
@@ -433,11 +462,9 @@ end;
 
 procedure TCEFConfig.SetPathLogFile(const Value: String);
 begin
-  if not TestaOk(FPathLogFile, Value) Then
-     Exit;
-  FPathLogFile := Value;
+  if TestaOk(FPathLogFile, Value) Then
+    FPathLogFile := Value;
 end;
-
 
 destructor TCEFConfig.Destroy;
 begin

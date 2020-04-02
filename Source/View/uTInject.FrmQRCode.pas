@@ -71,7 +71,7 @@ uses System.NetEncoding, Vcl.Imaging.jpeg, Vcl.Imaging.pngimage,
 procedure TFrmQRCode.FormClose(Sender: TObject; var Action: TCloseAction);
 begin
   if not FpodeFechar then
-    action    := caHide;
+    Action := caHide;
 
   FTimerGetQrCode.Enabled := False;
 end;
@@ -79,17 +79,18 @@ end;
 procedure TFrmQRCode.FormCloseQuery(Sender: TObject; var CanClose: Boolean);
 begin
   if not FpodeFechar then
-  Begin
-    if MessageDlg(Text_FrmQRCode_OnCLose, mtConfirmation, [mbYes, mbNo], 0) <> mrYes then
-    Begin
+  begin
+    if Application.MessageBox(PChar(Text_FrmQRCode_OnCLose), 'Atenção', MB_YESNO) = idNO then
+    begin
       CanClose := False;
       Exit;
     end;
+
     FTimerGetQrCode.Enabled := False;
-    self.Hide;
+    Self.Hide;
     if Assigned(FCLoseForm) then
-       FCLoseForm(Self);
-  End;
+      FCLoseForm(Self);
+  end;
 
   CanClose                := FpodeFechar;
   FTimerGetQrCode.Enabled := False;
@@ -128,7 +129,7 @@ end;
 procedure TFrmQRCode.FormHide(Sender: TObject);
 begin
   if FFormQrCodeType = Ft_Desktop Then
-     FTimerGetQrCode.Enabled  := False;
+    FTimerGetQrCode.Enabled  := False;
 end;
 
 procedure TFrmQRCode.FormShow(Sender: TObject);

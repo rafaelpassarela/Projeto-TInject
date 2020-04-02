@@ -284,7 +284,7 @@ object frmPrincipal: TfrmPrincipal
           322
           397)
         object whatsOn: TImage
-          Left = 108
+          Left = 103
           Top = 149
           Width = 103
           Height = 104
@@ -1608,7 +1608,7 @@ object frmPrincipal: TfrmPrincipal
           OnClick = whatsOnClick
         end
         object whatsOff: TImage
-          Left = 108
+          Left = 103
           Top = 149
           Width = 103
           Height = 104
@@ -3725,6 +3725,7 @@ object frmPrincipal: TfrmPrincipal
     OnIsConnected = TInject1IsConnected
     OnGetCheckIsValidNumber = TInject1GetCheckIsValidNumber
     OnGetMyNumber = TInject1GetMyNumber
+    OnUpdateJS = TInject1UpdateJS
     OnLowBattery = TInject1LowBattery
     OnDisconnectedBrute = TInject1DisconnectedBrute
     OnErroAndWarning = TInject1ErroAndWarning

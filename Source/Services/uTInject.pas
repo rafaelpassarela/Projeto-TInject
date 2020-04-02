@@ -45,6 +45,7 @@ type
   {Events}
   TOnGetCheckIsConnected    = Procedure (Sender : TObject; Connected: Boolean) of object;
   TOnGetCheckIsValidNumber  = Procedure (Sender : TObject; Number: String;  IsValid: Boolean) of object;
+  TOnGetBatteryLevelValue   = procedure(const Value : Word) of object;
   TGetUnReadMessages        = procedure(Const Chats: TChatList) of object;
   TOnGetQrCode              = procedure(Const Sender: Tobject; Const QrCode: TResultQRCodeClass) of object;
   TOnAllContacts            = procedure(Const AllContacts: TRetornoAllContacts) of object;
@@ -66,6 +67,7 @@ type
     //Typing                  : Boolean;
     FLanguageInject         : TLanguageInject;
     FOnDisconnectedBrute    : TNotifyEvent;
+    FOnGetBatteryLevelValue : TOnGetBatteryLevelValue;
     { Private  declarations }
     Function  ConsolePronto:Boolean;
     procedure SetAuth(const Value: boolean);
@@ -159,6 +161,7 @@ type
     property OnGetUnReadMessages         : TGetUnReadMessages         read FOnGetUnReadMessages            write FOnGetUnReadMessages;
     property OnGetStatus                 : TNotifyEvent               read FOnGetStatus                    write FOnGetStatus;
     property OnGetBatteryLevel           : TNotifyEvent               read FOnGetBatteryLevel              write FOnGetBatteryLevel;
+    property OnGetBatteryLevelvalue      : TOnGetBatteryLevelValue    read FOnGetBatteryLevelValue         write FOnGetBatteryLevelValue;
     property OnIsConnected               : TOnGetCheckIsConnected     read FOnGetCheckIsConnected          write FOnGetCheckIsConnected;
     property OnGetCheckIsValidNumber     : TOnGetCheckIsValidNumber   read FOnGetCheckIsValidNumber        write FOnGetCheckIsValidNumber;
 
@@ -194,7 +197,7 @@ end;
 procedure TInject.GetBatteryStatus();
 begin
   if Assigned(FrmConsole) then
-     FrmConsole.GetBatteryLevel;
+    FrmConsole.GetBatteryLevel;
 end;
 
 function TInject.Auth(PRaise: Boolean): Boolean;
@@ -202,7 +205,7 @@ begin
   Result := authenticated;
 
   if (not Result) and  (PRaise) then
-     raise Exception.Create(Text_Status_Serv_Disconnected);
+    raise Exception.Create(Text_Status_Serv_Disconnected);
 end;
 
 //funcao experimental para configuracao de proxy de rede(Ainda nao foi testada)
@@ -582,6 +585,13 @@ begin
     Fstatus     := Server_Disconnected;
     if Assigned(fOnGetStatus) then
        fOnGetStatus(Self);
+    Exit;
+  end;
+
+  if PTypeHeader in [Th_GetBatteryLevel] then
+  begin
+    if Assigned(FOnGetBatteryLevelValue) then
+      FOnGetBatteryLevelValue(StrToIntDef(pValue, 0));
     Exit;
   end;
 

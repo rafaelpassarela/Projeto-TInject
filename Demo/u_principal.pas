@@ -125,6 +125,7 @@ type
       IsValid: Boolean);
     procedure btIsConnectedClick(Sender: TObject);
     procedure TInject1IsConnected(Sender: TObject; Connected: Boolean);
+    procedure TInject1UpdateJS(Sender: TObject);
   private
     { Private declarations }
     FIniciando: Boolean;
@@ -588,6 +589,11 @@ begin
   Lbl_Avisos.Caption    := 'Alarme de BATERIA.  Você está com ' + TInject(Sender).BatteryLevel.ToString + '%';
   Lbl_Avisos.Font.Color := clRed;
   Timer2.Enabled        := True;
+end;
+
+procedure TfrmPrincipal.TInject1UpdateJS(Sender: TObject);
+begin
+  StatusBar1.Panels[1].Text := 'JS Atualizado';
 end;
 
 procedure TfrmPrincipal.listaChatsDblClick(Sender: TObject);

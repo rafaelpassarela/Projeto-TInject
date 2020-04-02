@@ -38,7 +38,7 @@ Const
   CardGroup                       = '@g.us';
   CardList                        = '@broadcast';
   NomeArquivoInject               = 'js.abr';
-  NomeArquivoIni                  = 'ConfTInject.ini';
+//  NomeArquivoIni                  = 'ConfTInject.ini';
   MsMaxFindJSinDesigner           = 15000;
   VersaoMinima_CF4_Major          = 78;
   VersaoMinima_CF4_Minor          = 3;

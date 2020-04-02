@@ -31,6 +31,10 @@
   Modificação..: Adicionadas novas propriedades das mensagens conforme verificação com o LOG
 
 ####################################################################################################################
+
+uCommon.Intf faz parte do novo sistema de log, disponivel no pacote RpFlexDBConnection
+  https://github.com/rafaelpassarela/delphi-flex-dbconnection
+
 }
 
 unit uTInject.Classes;
@@ -41,10 +45,10 @@ interface
 
 uses Generics.Collections, Rest.Json, uTInject.FrmQRCode, Vcl.Graphics, System.IOUtils,
   System.Classes, uTInject.Constant, IdHTTP, Vcl.ExtCtrls,
- {$IFDEF DELPHI25_UP}
-    Vcl.IdAntiFreeze,
+  {$IFDEF DELPHI25_UP}
+  Vcl.IdAntiFreeze,
   {$ENDIF}
-  IdBaseComponent, IdComponent, IdTCPConnection, IdTCPClient;
+  IdBaseComponent, IdComponent, IdTCPConnection, IdTCPClient, uCommon.Intf;
 
 type
 
@@ -325,19 +329,20 @@ type
     FId           : String;
     FName         : String;
     Fpushname     : String;
+    FshortName    : string;
     FType         : String;
     FverifiedName : String;
     Fmsgs         : String;
     FstatusMute   : Boolean;
-      FsectionHeader : String;
+    FsectionHeader : String;
     FLabels       : TArray<String>;
     FFormattedName: String;
 //    FGlobal       : String;
     FIsMe         : Boolean;
     FIsMyContact  : Boolean;
     FIsPSA        : Boolean;
-//    FIsBusiness   : Boolean;
-//    FIsEnterprise : Boolean;
+    FIsBusiness   : Boolean;
+    FIsEnterprise : Boolean;
 //    FisContactBlocked: Boolean;
     FIsUser       : Boolean;
     FIsWAContact  : Boolean;
@@ -351,10 +356,11 @@ type
     property sectionHeader:  String          read FsectionHeader      write FsectionHeader;
     property id:             String          read FId                 write FId;
     property name:           String          read FName               write FName;
-    property pushname:       String          Read Fpushname           Write Fpushname;
+    property pushname:       String          read Fpushname           write Fpushname;
+    property shortName :     string          read FshortName          write FshortName;
     property verifiedName:   String          Read FverifiedName       Write FverifiedName;
-//    property isBusiness:     Boolean         read FIsBusiness         write FIsBusiness;
-//    property isEnterprise:   Boolean         read FIsEnterprise       write FIsEnterprise;
+    property isBusiness:     Boolean         read FIsBusiness         write FIsBusiness;
+    property isEnterprise:   Boolean         read FIsEnterprise       write FIsEnterprise;
     property isUser:         Boolean         read FIsUser             write FIsUser;
 //    property isContactBlocked: Boolean       read FisContactBlocked   write FisContactBlocked;
     property statusMute:     Boolean         read FStatusMute         write FStatusMute;
@@ -499,10 +505,10 @@ type
     FKind           : String;
     FKindTypeNumber : TTypeNumber;
     FIsGroup        : Boolean;
-       FContact        : TContactClass;
+    FContact        : TContactClass;
     FGroupMetadata  : TGroupMetadataClass;
-       FPresence       : TPresenceClass;
-       FMessages       : tArray<TMessagesClass>;
+    FPresence       : TPresenceClass;
+    FMessages       : tArray<TMessagesClass>;
     FIsAnnounceGrpRestrict: Boolean;
   public
     constructor Create(pAJsonString: string);
@@ -620,6 +626,7 @@ end;
 
 
 Procedure LogAdd(Pvalor:WideString; PCab:String = '');
+procedure SetLoggerEngine(const ALogger : ICommonLogger);
 Procedure ClearLastQrcodeCtr;
 
 
@@ -633,11 +640,17 @@ uses
 
 var
   FUltimoQrCode: String;
+  _Logger : ICommonLogger;
 
 Procedure ClearLastQrcodeCtr;
 Begin
   FUltimoQrCode:= '';
 End;
+
+procedure SetLoggerEngine(const ALogger : ICommonLogger);
+begin
+  _Logger := ALogger;
+end;
 
 Procedure LogAdd(Pvalor:WideString; PCab:String);
 Var
@@ -647,9 +660,9 @@ Begin
     if Assigned(GlobalCEFApp) then
     Begin
       //Garante um arquivo novo e limpo a cada hora
-      LName := GlobalCEFApp.LogConsole+ 'ConsoleMessage'+FormatDateTime('yymmdd_HH', now) +'.log';
+      LName := GlobalCEFApp.PathLogConsole+ 'ConsoleMessage'+FormatDateTime('yymmdd_HH', now) +'.log';
 
-      if (not GlobalCEFApp.LogConsoleActive) or (GlobalCEFApp.LogConsole = '') Then
+      if (not GlobalCEFApp.LogConsoleActive) or (GlobalCEFApp.PathLogConsole = '') Then
          Exit;
 
       if PCab = '' then
@@ -658,9 +671,13 @@ Begin
             LTmp:= '[' + FormatDateTime('dd/mm/yy hh:nn:ss', now) + ' - ' + PCab + ']  ' + slinebreak Else
             LTmp:= '[' + FormatDateTime('dd/mm/yy hh:nn:ss', now) + ' - ' + PCab + ']  ' + slinebreak;
 
-      if PCab= 'CONSOLE'  then
-        TFile.AppendAllText(LName, slinebreak, TEncoding.ASCII);
-      TFile.AppendAllText(LName, slinebreak + LTmp + Pvalor, TEncoding.ASCII);
+      if _Logger = nil then
+      begin
+        if PCab= 'CONSOLE'  then
+          TFile.AppendAllText(LName, slinebreak, TEncoding.ASCII);
+        TFile.AppendAllText(LName, slinebreak + LTmp + Pvalor, TEncoding.ASCII);
+      end else
+        _Logger.AddLog(LTmp + Pvalor, False);
     End;
   Except
 
@@ -1110,5 +1127,8 @@ begin
   inherited Create(pAJsonString);
   //FResult := FResult;//Copy(FResult, 0 , Pos('@', FResult)-1);
 end;
+
+initialization
+  _Logger := nil;
 
 end.

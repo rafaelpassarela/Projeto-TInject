@@ -72,7 +72,8 @@ requires
   adortl,
   RESTComponents,
   CEF4Delphi,
-  VclSmp;
+  VclSmp,
+  RpFlexDBConnection;
 
 contains
   Vcl.IdAntiFreeze,
